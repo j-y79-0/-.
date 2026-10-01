@@ -1,145 +1,978 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>오늘의 선생님 추천</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>해피플래너 😊🌸 - Cute & Smart Daily Planner</title>
+  
+  <!-- FontAwesome CDN (아이콘) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <!-- Google Fonts (Gaegu & Noto Sans KR) -->
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <!-- html2canvas CDN (시간표 이미지 저장) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-        body {
-            background-color: #f4f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
+  <style>
+    :root {
+      --bg-color: #FFF5F7;
+      --card-bg: #FFFFFF;
+      --primary-pink: #FFB7B2;
+      --primary-pink-hover: #FF9AA2;
+      --pastel-blue: #C7CEEA;
+      --pastel-yellow: #FFFFD1;
+      --pastel-green: #E2F0CB;
+      --pastel-purple: #E0C3FC;
+      --text-dark: #524B68;
+      --text-muted: #8E88A8;
+      --border-color: #FFE3E8;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --shadow-cute: 0 10px 25px rgba(255, 183, 178, 0.25);
+      --font-cute: 'Gaegu', cursive;
+      --font-main: 'Noto Sans KR', sans-serif;
+    }
 
-        .container {
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            padding: 40px 30px;
-            text-align: center;
-            max-width: 420px;
-            width: 100%;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        h1 {
-            color: #333333;
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-dark);
+      font-family: var(--font-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
 
-        p.subtitle {
-            color: #666666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
+    .app-container {
+      width: 100%;
+      max-width: 650px;
+      background: var(--card-bg);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-cute);
+      padding: 30px 25px;
+      border: 3px solid #FFF0F3;
+      position: relative;
+    }
 
-        .result-box {
-            background-color: #eef2f7;
-            border-radius: 15px;
-            height: 120px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
+    .app-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
 
-        .teacher-name {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c3e50;
-            opacity: 1;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
+    .app-title {
+      font-family: var(--font-cute);
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #FF8383;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-shadow: 2px 2px 0px #FFE0E3;
+    }
 
-        .teacher-name.fade-out {
-            opacity: 0;
-            transform: scale(0.9);
-        }
+    .motto-box {
+      background: #FFF9FA;
+      border: 2px dashed #FFCCD5;
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .teacher-name.fade-in {
-            opacity: 1;
-            transform: scale(1);
-        }
+    .motto-input {
+      border: none;
+      background: transparent;
+      font-family: var(--font-cute);
+      font-size: 1.3rem;
+      color: #6C5CE7;
+      width: 100%;
+      outline: none;
+    }
 
-        .btn-recommend {
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
+    .btn-quote-random {
+      background: #E8DFF5;
+      color: #6C5CE7;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
 
-        .btn-recommend:hover {
-            background-color: #357abd;
-        }
+    .btn-quote-random:hover {
+      background: #D0C2F2;
+      transform: scale(1.05);
+    }
 
-        .btn-recommend:active {
-            transform: scale(0.98);
-        }
-    </style>
+    /* Step indicator */
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin: 20px 10px 25px 10px;
+      position: relative;
+    }
+
+    .step-indicator::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 12%;
+      right: 12%;
+      height: 4px;
+      background: #FFE3E8;
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .step-dot {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #FFE3E8;
+      color: #A093AB;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1rem;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s;
+    }
+
+    .step-dot.active {
+      background: var(--primary-pink);
+      color: white;
+      transform: scale(1.15);
+      box-shadow: 0 4px 10px rgba(255, 154, 162, 0.5);
+    }
+
+    .step-dot.completed {
+      background: #B5EAD7;
+      color: white;
+    }
+
+    /* Form Section */
+    .step-section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .step-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #554D74;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      background: #FFFDFE;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    input[type="time"], input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #FFE5EC;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      outline: none;
+      background: #FFFBFB;
+      color: var(--text-dark);
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-pink);
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-pink);
+      color: white;
+      box-shadow: 0 4px 12px rgba(255, 183, 178, 0.4);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-pink-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: var(--pastel-blue);
+      color: #4A5568;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px dashed var(--primary-pink);
+      color: #FF7B7B;
+      margin-top: 6px;
+    }
+
+    .btn-outline:hover {
+      background: #FFF0F3;
+    }
+
+    .btn-danger {
+      background-color: #FFB7B2;
+      color: white;
+      padding: 6px 10px;
+      width: auto;
+      font-size: 0.8rem;
+    }
+
+    /* Info & Warning Cards */
+    .info-card {
+      background-color: #FFF0F5;
+      border: 2px solid #FFD6E0;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .info-card h3 {
+      font-size: 1.2rem;
+      color: #E65C00;
+      margin-bottom: 4px;
+      font-family: var(--font-cute);
+    }
+
+    .info-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .warning-card {
+      background-color: #FFF9E6;
+      border-color: #FFE58F;
+      color: #8C6200;
+    }
+
+    /* Dynamic Lists */
+    .dynamic-item {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+      background: #FFFDFE;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    /* Timetable Grid */
+    .timetable-wrapper {
+      background: #FFFFFF;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      max-height: 420px;
+      overflow-y: auto;
+      margin-bottom: 18px;
+    }
+
+    .timetable-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .time-slot {
+      display: flex;
+      align-items: center;
+      height: 32px;
+      border-bottom: 1px dashed #FFE3E8;
+      font-size: 0.8rem;
+    }
+
+    .slot-time {
+      width: 55px;
+      font-weight: 700;
+      color: #9C8EAD;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .slot-content {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: var(--text-dark);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .slot-content.completed-task {
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    /* Item Category Styling */
+    .type-fixed { background-color: #E2E8F0; color: #4A5568; }
+    .type-sleep { background-color: #E0C3FC; color: #4A154B; }
+    .type-meal  { background-color: #FFE5D9; color: #9C4100; }
+    .type-rest  { background-color: #D8F3DC; color: #1B4332; }
+    .type-todo-high { background-color: #FFADAD; color: #780000; border-left: 4px solid #FF0000; }
+    .type-todo-med  { background-color: #FDFFB6; color: #745200; border-left: 4px solid #E6A100; }
+    .type-todo-low  { background-color: #CAFFBF; color: #1B4332; border-left: 4px solid #2B9348; }
+    .type-free { background-color: #FAFAFA; color: #CCC; }
+
+    .badge-priority {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 8px;
+      margin-left: 6px;
+      background: rgba(255,255,255,0.7);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .timetable-wrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+    .timetable-wrapper::-webkit-scrollbar-thumb {
+      background: var(--primary-pink);
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>오늘의 선생님 추천</h1>
-        <p class="subtitle">버튼을 눌러 오늘의 선생님을 확인해보세요!</p>
-        
-        <div class="result-box">
-            <div id="teacherResult" class="teacher-name">???</div>
-        </div>
+  <div class="app-container">
+    <!-- 앱 헤더 & 힐링 명언 -->
+    <header class="app-header">
+      <h1 class="app-title">😊 해피플래너 🌸</h1>
+      <div class="motto-box">
+        <span>💬</span>
+        <input type="text" id="motto-input" class="motto-input" value="오늘도 웃으면서 파이팅! 💖" placeholder="오늘의 한마디나 목표를 입력하세요!">
+        <button class="btn-quote-random" onclick="getRandomQuote()">랜덤 힐링</button>
+      </div>
+    </header>
 
-        <button class="btn-recommend" onclick="recommendTeacher()">선생님 추천</button>
+    <!-- 진행 단계 표시 -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot-1">1</div>
+      <div class="step-dot" id="dot-2">2</div>
+      <div class="step-dot" id="dot-3">3</div>
     </div>
 
-    <script>
-        // 선생님 명단 배열
-        const teachers = [
-            "소연쌤", "민아쌤", "지수쌤", "권이담쌤", "최은영쌤", 
-            "이숙경쌤", "안다솔쌤", "한상미쌤", "양현호쌤", "조예진쌤", 
-            "박지연쌤", "배성님쌤", "이은정쌤", "박종현쌤", "최인석쌤", 
-            "장민석쌤", "우단해쌤", "박하나쌤", "박지영쌤", "김윤정쌤", 
-            "안세경쌤", "오혜민쌤", "허유정쌤", "조일경쌤", "정지윤쌤", 
-            "신은아쌤", "한나경쌤", "클로이쌤", "싸울쌤", "이다혜쌤", 
-            "정승민쌤", "조숭희쌤"
-        ];
+    <!-- ================= STEP 1: 고정 일과 & 식사 시간 설정 ================= -->
+    <section class="step-section active" id="step-1">
+      <div class="form-group">
+        <div class="section-title"><i class="fa-solid fa-moon" style="color: #9C8ADE;"></i> 수면 시간</div>
+        <div class="input-row">
+          <input type="time" id="sleep-start" value="23:00">
+          <span>~</span>
+          <input type="time" id="sleep-end" value="07:00">
+        </div>
+      </div>
 
-        function recommendTeacher() {
-            const resultElement = document.getElementById('teacherResult');
-            
-            // 페이드 아웃 애니메이션
-            resultElement.classList.add('fade-out');
+      <div class="form-group">
+        <div class="section-title"><i class="fa-solid fa-school" style="color: #FF8B94;"></i> 학교 / 직장 시간</div>
+        <div class="input-row">
+          <input type="time" id="school-start" value="08:30">
+          <span>~</span>
+          <input type="time" id="school-end" value="16:00">
+        </div>
+      </div>
 
-            setTimeout(() => {
-                // 랜덤으로 선생님 한 명 선택
-                const randomIndex = Math.floor(Math.random() * teachers.length);
-                const selectedTeacher = teachers[randomIndex];
+      <!-- 식사 시간 설정 -->
+      <div class="form-group">
+        <div class="section-title"><i class="fa-solid fa-utensils" style="color: #FFB347;"></i> 식사 시간 냠냠 🍱</div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div class="input-row">
+            <label class="checkbox-label" style="width: 100px;">
+              <input type="checkbox" id="meal-breakfast-check" checked> 🥣 아침
+            </label>
+            <input type="time" id="meal-breakfast-start" value="07:30">
+            <span>~</span>
+            <input type="time" id="meal-breakfast-end" value="08:00">
+          </div>
 
-                // 텍스트 교체
-                resultElement.textContent = selectedTeacher;
+          <div class="input-row">
+            <label class="checkbox-label" style="width: 100px;">
+              <input type="checkbox" id="meal-lunch-check" checked> 🍱 점심
+            </label>
+            <input type="time" id="meal-lunch-start" value="12:00">
+            <span>~</span>
+            <input type="time" id="meal-lunch-end" value="13:00">
+          </div>
 
-                // 페이드 인 애니메이션
-                resultElement.classList.remove('fade-out');
-                resultElement.classList.add('fade-in');
-            }, 150);
+          <div class="input-row">
+            <label class="checkbox-label" style="width: 100px;">
+              <input type="checkbox" id="meal-dinner-check" checked> 🍛 저녁
+            </label>
+            <input type="time" id="meal-dinner-start" value="18:30">
+            <span>~</span>
+            <input type="time" id="meal-dinner-end" value="19:30">
+          </div>
+        </div>
+      </div>
+
+      <!-- 추가 고정 일정 (학원 등) -->
+      <div class="form-group">
+        <div class="section-title"><i class="fa-solid fa-clock" style="color: #A8E6CF;"></i> 학원 및 기타 고정 일정</div>
+        <div id="fixed-schedules-container"></div>
+        <button type="button" class="btn btn-outline" id="add-fixed-btn">
+          <i class="fa-solid fa-plus"></i> 고정 일정 추가하기
+        </button>
+      </div>
+
+      <!-- 실시간 남는 시간 안내 -->
+      <div class="info-card">
+        <p>오늘 나에게 남은 자유 시간 ⏰</p>
+        <h3 id="free-time-display">0시간 0분</h3>
+      </div>
+
+      <button class="btn btn-primary" onclick="goToStep(2)">
+        다음 단계로 (할 일 입력) <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </section>
+
+    <!-- ================= STEP 2: 오늘 할 일 작성 ================= -->
+    <section class="step-section" id="step-2">
+      <div class="info-card" id="todo-summary-card">
+        <p>남은 자유 시간: <b id="step2-free-time">0시간 0분</b></p>
+        <h3>할 일 총 소요시간: <span id="todo-total-time">0분</span></h3>
+      </div>
+
+      <div class="form-group">
+        <div class="section-title"><i class="fa-solid fa-check-double" style="color: #FF8B94;"></i> 오늘 꼭 해야 할 일 목록</div>
+        <div id="todo-list-container"></div>
+        <button type="button" class="btn btn-outline" id="add-todo-btn">
+          <i class="fa-solid fa-plus"></i> 할 일 추가하기
+        </button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-secondary" onclick="goToStep(1)">
+          <i class="fa-solid fa-arrow-left"></i> 이전
+        </button>
+        <button class="btn btn-primary" onclick="generateAndGoToStep3()">
+          시간표 자동 완성! ✨
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= STEP 3: 10분 단위 하루 일과표 ================= -->
+    <section class="step-section" id="step-3">
+      <div class="info-card">
+        <h3>🎉 나만의 해피 시간표 완성!</h3>
+        <p>50분 열공/열일 후 10분 휴식(☕)이 자동으로 들어있어요!</p>
+      </div>
+
+      <div id="timetable-capture-area" style="background: white; padding: 12px; border-radius: 16px;">
+        <div style="text-align: center; margin-bottom: 12px;">
+          <h2 style="font-family: var(--font-cute); font-size: 1.8rem; color: #FF7B7B;" id="display-motto-title">
+            "오늘도 웃으면서 파이팅! 💖"
+          </h2>
+        </div>
+        <div class="timetable-wrapper">
+          <div class="timetable-grid" id="timetable-grid"></div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-secondary" onclick="goToStep(2)">
+          <i class="fa-solid fa-pen"></i> 수정하기
+        </button>
+        <button class="btn btn-primary" onclick="downloadTimetableImage()">
+          <i class="fa-solid fa-download"></i> 이미지 저장
+        </button>
+      </div>
+      <button class="btn btn-outline" style="margin-top: 10px;" onclick="resetAll()">
+        <i class="fa-solid fa-rotate-right"></i> 처음부터 다시 짜기
+      </button>
+    </section>
+  </div>
+
+  <script>
+    // 상태 데이터 관리
+    const state = {
+      sleep: { start: "23:00", end: "07:00" },
+      school: { start: "08:30", end: "16:00" },
+      meals: {
+        breakfast: { enabled: true, start: "07:30", end: "08:00" },
+        lunch: { enabled: true, start: "12:00", end: "13:00" },
+        dinner: { enabled: true, start: "18:30", end: "19:30" }
+      },
+      fixedSchedules: [
+        { name: "영어 학원", start: "17:00", end: "18:30" }
+      ],
+      todos: [
+        { name: "수학 숙제 풀기 📐", time: 60, priority: "high" },
+        { name: "국어 과제 작성 📝", time: 40, priority: "med" },
+        { name: "영단어 암기 🔤", time: 30, priority: "low" }
+      ],
+      freeMinutes: 0
+    };
+
+    const quotes = [
+      "오늘도 너무 수고했어! 토닥토닥 🐣",
+      "작은 도전이 모여 커다란 성장이 돼! 🌱",
+      "천천히 가도 괜찮아, 포기하지만 말자! 🐢",
+      "오늘 하루도 웃음 가득한 날 보내자! 😊",
+      "너는 생각보다 훨씬 멋진 사람이야! ✨",
+      "쉬어가는 것도 공부/일의 일부야! ☕"
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadLocalStorage();
+      initStep1Events();
+      initStep2Events();
+      calculateFreeTime();
+      renderFixedSchedules();
+      renderTodoList();
+    });
+
+    function getRandomQuote() {
+      const idx = Math.floor(Math.random() * quotes.length);
+      document.getElementById('motto-input').value = quotes[idx];
+    }
+
+    function timeToMinutes(timeStr) {
+      if(!timeStr) return 0;
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function minutesToTime(totalMins) {
+      let mins = (totalMins + 1440) % 1440;
+      const h = Math.floor(mins / 60).toString().padStart(2, '0');
+      const m = (mins % 60).toString().padStart(2, '0');
+      return `${h}:${m}`;
+    }
+
+    function saveLocalStorage() {
+      localStorage.setItem("happyPlanner_data", JSON.stringify({
+        sleep: state.sleep,
+        school: state.school,
+        meals: state.meals,
+        fixedSchedules: state.fixedSchedules,
+        motto: document.getElementById('motto-input').value
+      }));
+    }
+
+    function loadLocalStorage() {
+      const saved = localStorage.getItem("happyPlanner_data");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if(parsed.sleep) state.sleep = parsed.sleep;
+        if(parsed.school) state.school = parsed.school;
+        if(parsed.meals) state.meals = parsed.meals;
+        if(parsed.fixedSchedules) state.fixedSchedules = parsed.fixedSchedules;
+        if(parsed.motto) document.getElementById('motto-input').value = parsed.motto;
+
+        document.getElementById("sleep-start").value = state.sleep.start;
+        document.getElementById("sleep-end").value = state.sleep.end;
+        document.getElementById("school-start").value = state.school.start;
+        document.getElementById("school-end").value = state.school.end;
+
+        // 식사
+        document.getElementById("meal-breakfast-check").checked = state.meals.breakfast.enabled;
+        document.getElementById("meal-breakfast-start").value = state.meals.breakfast.start;
+        document.getElementById("meal-breakfast-end").value = state.meals.breakfast.end;
+
+        document.getElementById("meal-lunch-check").checked = state.meals.lunch.enabled;
+        document.getElementById("meal-lunch-start").value = state.meals.lunch.start;
+        document.getElementById("meal-lunch-end").value = state.meals.lunch.end;
+
+        document.getElementById("meal-dinner-check").checked = state.meals.dinner.enabled;
+        document.getElementById("meal-dinner-start").value = state.meals.dinner.start;
+        document.getElementById("meal-dinner-end").value = state.meals.dinner.end;
+      }
+    }
+
+    function initStep1Events() {
+      const inputs = [
+        'sleep-start', 'sleep-end', 'school-start', 'school-end',
+        'meal-breakfast-start', 'meal-breakfast-end',
+        'meal-lunch-start', 'meal-lunch-end',
+        'meal-dinner-start', 'meal-dinner-end'
+      ];
+
+      inputs.forEach(id => {
+        document.getElementById(id).addEventListener('change', updateStep1State);
+      });
+
+      ['meal-breakfast-check', 'meal-lunch-check', 'meal-dinner-check'].forEach(id => {
+        document.getElementById(id).addEventListener('change', updateStep1State);
+      });
+
+      document.getElementById('add-fixed-btn').addEventListener('click', () => {
+        state.fixedSchedules.push({ name: "기타 일정", start: "19:30", end: "20:30" });
+        renderFixedSchedules();
+        calculateFreeTime();
+        saveLocalStorage();
+      });
+    }
+
+    function updateStep1State() {
+      state.sleep.start = document.getElementById('sleep-start').value;
+      state.sleep.end = document.getElementById('sleep-end').value;
+      state.school.start = document.getElementById('school-start').value;
+      state.school.end = document.getElementById('school-end').value;
+
+      state.meals.breakfast = {
+        enabled: document.getElementById('meal-breakfast-check').checked,
+        start: document.getElementById('meal-breakfast-start').value,
+        end: document.getElementById('meal-breakfast-end').value
+      };
+
+      state.meals.lunch = {
+        enabled: document.getElementById('meal-lunch-check').checked,
+        start: document.getElementById('meal-lunch-start').value,
+        end: document.getElementById('meal-lunch-end').value
+      };
+
+      state.meals.dinner = {
+        enabled: document.getElementById('meal-dinner-check').checked,
+        start: document.getElementById('meal-dinner-start').value,
+        end: document.getElementById('meal-dinner-end').value
+      };
+
+      calculateFreeTime();
+      saveLocalStorage();
+    }
+
+    function renderFixedSchedules() {
+      const container = document.getElementById('fixed-schedules-container');
+      container.innerHTML = '';
+
+      state.fixedSchedules.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.innerHTML = `
+          <input type="text" value="${item.name}" placeholder="일정 이름" onchange="updateFixedItem(${index}, 'name', this.value)">
+          <input type="time" value="${item.start}" onchange="updateFixedItem(${index}, 'start', this.value)">
+          <span>~</span>
+          <input type="time" value="${item.end}" onchange="updateFixedItem(${index}, 'end', this.value)">
+          <button class="btn btn-danger" onclick="removeFixedItem(${index})"><i class="fa-solid fa-trash"></i></button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateFixedItem(index, key, value) {
+      state.fixedSchedules[index][key] = value;
+      calculateFreeTime();
+      saveLocalStorage();
+    }
+
+    function removeFixedItem(index) {
+      state.fixedSchedules.splice(index, 1);
+      renderFixedSchedules();
+      calculateFreeTime();
+      saveLocalStorage();
+    }
+
+    function calculateFreeTime() {
+      let occupied = 0;
+
+      function getDuration(startStr, endStr) {
+        let st = timeToMinutes(startStr);
+        let et = timeToMinutes(endStr);
+        return (et >= st) ? (et - st) : (1440 - st + et);
+      }
+
+      // 수면 & 학교
+      occupied += getDuration(state.sleep.start, state.sleep.end);
+      occupied += getDuration(state.school.start, state.school.end);
+
+      // 식사
+      if (state.meals.breakfast.enabled) occupied += getDuration(state.meals.breakfast.start, state.meals.breakfast.end);
+      if (state.meals.lunch.enabled) occupied += getDuration(state.meals.lunch.start, state.meals.lunch.end);
+      if (state.meals.dinner.enabled) occupied += getDuration(state.meals.dinner.start, state.meals.dinner.end);
+
+      // 고정 일정
+      state.fixedSchedules.forEach(item => {
+        occupied += getDuration(item.start, item.end);
+      });
+
+      state.freeMinutes = Math.max(0, 1440 - occupied);
+
+      const hours = Math.floor(state.freeMinutes / 60);
+      const mins = state.freeMinutes % 60;
+
+      const displayStr = `${hours}시간 ${mins}분`;
+      document.getElementById('free-time-display').innerText = displayStr;
+      document.getElementById('step2-free-time').innerText = displayStr;
+    }
+
+    function initStep2Events() {
+      document.getElementById('add-todo-btn').addEventListener('click', () => {
+        state.todos.push({ name: "", time: 30, priority: "med" });
+        renderTodoList();
+      });
+    }
+
+    function renderTodoList() {
+      const container = document.getElementById('todo-list-container');
+      container.innerHTML = '';
+
+      state.todos.forEach((todo, index) => {
+        const div = document.createElement('div');
+        div.className = 'dynamic-item';
+        div.innerHTML = `
+          <input type="text" value="${todo.name}" placeholder="할 일 입력" style="flex: 2;" onchange="updateTodoItem(${index}, 'name', this.value)">
+          <input type="number" value="${todo.time}" placeholder="분" style="flex: 1;" min="10" step="10" onchange="updateTodoItem(${index}, 'time', parseInt(this.value)||0)">
+          <select style="flex: 1.2;" onchange="updateTodoItem(${index}, 'priority', this.value)">
+            <option value="high" ${todo.priority === 'high' ? 'selected' : ''}>🔴 높음</option>
+            <option value="med" ${todo.priority === 'med' ? 'selected' : ''}>🟡 보통</option>
+            <option value="low" ${todo.priority === 'low' ? 'selected' : ''}>🟢 낮음</option>
+          </select>
+          <button class="btn btn-danger" onclick="removeTodoItem(${index})"><i class="fa-solid fa-trash"></i></button>
+        `;
+        container.appendChild(div);
+      });
+      calculateTodoSum();
+    }
+
+    function updateTodoItem(index, key, value) {
+      state.todos[index][key] = value;
+      calculateTodoSum();
+    }
+
+    function removeTodoItem(index) {
+      state.todos.splice(index, 1);
+      renderTodoList();
+    }
+
+    function calculateTodoSum() {
+      const totalMins = state.todos.reduce((sum, item) => sum + (item.time || 0), 0);
+      const hours = Math.floor(totalMins / 60);
+      const mins = totalMins % 60;
+
+      const summaryCard = document.getElementById('todo-summary-card');
+      const timeDisplay = document.getElementById('todo-total-time');
+
+      timeDisplay.innerText = `${hours > 0 ? hours + '시간 ' : ''}${mins}분`;
+
+      if (totalMins > state.freeMinutes) {
+        summaryCard.className = "info-card warning-card";
+        timeDisplay.innerHTML += `<br><small style="font-size:0.8rem; color:#D97706;">⚠️ 할 일이 남은 자유시간보다 조금 많아요! 휴식 시간을 확보해 주세요 💖</small>`;
+      } else {
+        summaryCard.className = "info-card";
+      }
+    }
+
+    function generateAndGoToStep3() {
+      generateTimetable();
+      goToStep(3);
+    }
+
+    function generateTimetable() {
+      const grid = document.getElementById('timetable-grid');
+      grid.innerHTML = '';
+
+      document.getElementById('display-motto-title').innerText = `"${document.getElementById('motto-input').value}"`;
+
+      const slots = new Array(144).fill(null).map(() => ({ type: 'free', text: '' }));
+
+      function fillSlots(startTimeStr, endTimeStr, type, text) {
+        let start = Math.floor(timeToMinutes(startTimeStr) / 10);
+        let end = Math.floor(timeToMinutes(endTimeStr) / 10);
+
+        if (end < start) {
+          for (let i = start; i < 144; i++) slots[i] = { type, text };
+          for (let i = 0; i < end; i++) slots[i] = { type, text };
+        } else {
+          for (let i = start; i < end; i++) {
+            if (i < 144) slots[i] = { type, text };
+          }
         }
-    </script>
+      }
 
+      // 수면, 학교
+      fillSlots(state.sleep.start, state.sleep.end, 'sleep', '😴 수면 시간');
+      fillSlots(state.school.start, state.school.end, 'fixed', '🏫 학교 / 직장');
+
+      // 식사
+      if (state.meals.breakfast.enabled) fillSlots(state.meals.breakfast.start, state.meals.breakfast.end, 'meal', '🥣 아침 식사');
+      if (state.meals.lunch.enabled) fillSlots(state.meals.lunch.start, state.meals.lunch.end, 'meal', '🍱 점심 식사');
+      if (state.meals.dinner.enabled) fillSlots(state.meals.dinner.start, state.meals.dinner.end, 'meal', '🍛 저녁 식사');
+
+      // 고정 일정
+      state.fixedSchedules.forEach(item => {
+        fillSlots(item.start, item.end, 'fixed', `📌 ${item.name}`);
+      });
+
+      // To-Do 배치 (우선순위 정렬 + 50분 후 10분 휴식)
+      const priorityOrder = { high: 1, med: 2, low: 3 };
+      const sortedTodos = [...state.todos].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+
+      let currentTodoIndex = 0;
+      let currentTodoRemMins = sortedTodos.length > 0 ? sortedTodos[0].time : 0;
+      let consecutiveWorkMins = 0;
+
+      for (let i = 0; i < 144; i++) {
+        if (currentTodoIndex >= sortedTodos.length) break;
+
+        if (slots[i].type === 'free') {
+          if (consecutiveWorkMins >= 50) {
+            slots[i] = { type: 'rest', text: '☕ 휴식 및 차 한잔' };
+            consecutiveWorkMins = 0;
+            continue;
+          }
+
+          const todo = sortedTodos[currentTodoIndex];
+          slots[i] = {
+            type: `todo-${todo.priority}`,
+            text: `✏️ ${todo.name}`,
+            priority: todo.priority
+          };
+
+          currentTodoRemMins -= 10;
+          consecutiveWorkMins += 10;
+
+          if (currentTodoRemMins <= 0) {
+            currentTodoIndex++;
+            if (currentTodoIndex < sortedTodos.length) {
+              currentTodoRemMins = sortedTodos[currentTodoIndex].time;
+            }
+          }
+        } else {
+          consecutiveWorkMins = 0;
+        }
+      }
+
+      // DOM 렌더링
+      for (let i = 0; i < 144; i++) {
+        const timeStr = minutesToTime(i * 10);
+        const slotData = slots[i];
+
+        const row = document.createElement('div');
+        row.className = 'time-slot';
+
+        const isOnHour = i % 6 === 0;
+        const timeDisplay = isOnHour ? timeStr : '';
+
+        let badge = '';
+        if (slotData.priority) {
+          const pText = slotData.priority === 'high' ? '높음' : slotData.priority === 'med' ? '보통' : '낮음';
+          badge = `<span class="badge-priority">${pText}</span>`;
+        }
+
+        row.innerHTML = `
+          <div class="slot-time">${timeDisplay}</div>
+          <div class="slot-content type-${slotData.type}" onclick="toggleTaskComplete(this)">
+            ${slotData.text} ${badge}
+          </div>
+        `;
+        grid.appendChild(row);
+      }
+    }
+
+    function toggleTaskComplete(element) {
+      element.classList.toggle('completed-task');
+    }
+
+    function goToStep(stepNumber) {
+      document.querySelectorAll('.step-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.step-dot').forEach((dot, idx) => {
+        if (idx + 1 === stepNumber) {
+          dot.className = "step-dot active";
+        } else if (idx + 1 < stepNumber) {
+          dot.className = "step-dot completed";
+        } else {
+          dot.className = "step-dot";
+        }
+      });
+
+      document.getElementById(`step-${stepNumber}`).classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function downloadTimetableImage() {
+      const captureArea = document.getElementById('timetable-capture-area');
+
+      html2canvas(captureArea, {
+        scale: 2,
+        backgroundColor: "#FFFFFF"
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `Happy_Planner_${new Date().toISOString().slice(0,10)}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    function resetAll() {
+      if (confirm("해피플래너의 모든 입력을 초기화하시겠습니까?")) {
+        localStorage.removeItem("happyPlanner_data");
+        location.reload();
+      }
+    }
+  </script>
 </body>
 </html>
